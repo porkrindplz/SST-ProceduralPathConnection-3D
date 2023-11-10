@@ -9,11 +9,13 @@ using UnityEngine.Rendering.Universal.Internal;
 using System.IO;
 
 
+
 public enum Side3D { Forward = 0, Right = 1, Back = 2, Left = 3, Up = 4, Down = 5 };
 public enum SideStyle3D
 {
     Blank,
     Wide,
+    Tall,
     Center,
     Two,
     Unknown
@@ -87,9 +89,10 @@ public class Sides3D
 /// </summary>
 public class Tile3D : MonoBehaviour
 {
-    public bool rot90 = true;
-    public bool rot180 = true;
-    public bool rot270 = true;
+    public bool rotX90 = true;
+    public bool rotX180 = true;
+    public bool rotX270 = true;
+    public bool rotZ90 = true;
     public bool rotZ180 = true;
 
     public Sides3D sides = new Sides3D();
@@ -100,6 +103,10 @@ public class Tile3D : MonoBehaviour
     public SideStyle3D left;
     public SideStyle3D up;
     public SideStyle3D down;
+
+    [Header("Color Options")]
+    Material[] materials;
+    Renderer ren;
 
     public ValidNeighbours3D validNeighbours = new ValidNeighbours3D();
 
@@ -153,15 +160,6 @@ public class Tile3D : MonoBehaviour
         }
     }
 
-    public enum RotationType3D
-    {
-        None,
-        Rot90,
-        Rot180,
-        Rot270,
-        RotZ180
-    }
-
     /// <summary>
     /// Analyzes the tiles to find valid neighbours.
     /// This is done by comparing the sides of this tile with the sides of the other tiles.
@@ -199,6 +197,19 @@ public class Tile3D : MonoBehaviour
         }
     }
 
+    private void Awake()
+    {
+
+    }
+    public void UpdateColor(int colorIndex)
+    {
+        ren = GetComponentInChildren<Renderer>();
+        materials = Resources.LoadAll<Material>("Materials");
+        Debug.Log("Material 0: " + materials[0].name + " Material 1: " + materials[1].name + " Material 2: " + materials[2].name);
+        Material currentMaterial = ren.material;
+        materials = materials.Where(x => x.name != currentMaterial.name).ToArray();
+        ren.material = materials[colorIndex];
+    }
     public int GetSideCount(Cell3D.Direction direction)
     {
         switch (direction)
@@ -216,7 +227,7 @@ public class Tile3D : MonoBehaviour
         }
     }
 
-    public void UpdateSides()
+    void SetConnectorSides(Vector3 forwardDir, Vector3 upDir, Vector3 rightDir)
     {
         float extent = 2.5f;
         Connector[] connectors = GetComponentsInChildren<Connector>();
@@ -225,45 +236,121 @@ public class Tile3D : MonoBehaviour
         List<Connector> rightConnectors = new();
         List<Connector> backConnectors = new();
         List<Connector> leftConnectors = new();
+        List<Connector> upConnectors = new();
+        List<Connector> downConnectors = new();
 
-        if (transform.rotation.eulerAngles.y == 0)
+        if (forwardDir == Vector3.forward)
         {
             forwardConnectors = connectors.Where(x => x.transform.localPosition.z == extent).ToList();
-            rightConnectors = connectors.Where(x => x.transform.localPosition.x == extent).ToList();
             backConnectors = connectors.Where(x => x.transform.localPosition.z == -extent).ToList();
-            leftConnectors = connectors.Where(x => x.transform.localPosition.x == -extent).ToList();
         }
-        if (transform.rotation.eulerAngles.y == 90)
+        else if (forwardDir == Vector3.right)
         {
-            forwardConnectors = connectors.Where(x => x.transform.localPosition.x == -extent).ToList();
             rightConnectors = connectors.Where(x => x.transform.localPosition.z == extent).ToList();
-            backConnectors = connectors.Where(x => x.transform.localPosition.x == extent).ToList();
             leftConnectors = connectors.Where(x => x.transform.localPosition.z == -extent).ToList();
         }
-        if (transform.rotation.eulerAngles.y == 180)
+        else if (forwardDir == Vector3.back)
         {
             forwardConnectors = connectors.Where(x => x.transform.localPosition.z == -extent).ToList();
-            rightConnectors = connectors.Where(x => x.transform.localPosition.x == -extent).ToList();
             backConnectors = connectors.Where(x => x.transform.localPosition.z == extent).ToList();
+        }
+        else if (forwardDir == Vector3.left)
+        {
+            rightConnectors = connectors.Where(x => x.transform.localPosition.z == -extent).ToList();
+            leftConnectors = connectors.Where(x => x.transform.localPosition.z == extent).ToList();
+        }
+        else if (forwardDir == Vector3.up)
+        {
+            upConnectors = connectors.Where(x => x.transform.localPosition.z == extent).ToList();
+            downConnectors = connectors.Where(x => x.transform.localPosition.z == -extent).ToList();
+        }
+        else if (forwardDir == Vector3.down)
+        {
+            upConnectors = connectors.Where(x => x.transform.localPosition.z == -extent).ToList();
+            downConnectors = connectors.Where(x => x.transform.localPosition.z == extent).ToList();
+        }
+
+        if (upDir == Vector3.up)
+        {
+            upConnectors = connectors.Where(x => x.transform.localPosition.y == extent).ToList();
+            downConnectors = connectors.Where(x => x.transform.localPosition.y == -extent).ToList();
+        }
+        else if (upDir == Vector3.down)
+        {
+            upConnectors = connectors.Where(x => x.transform.localPosition.y == -extent).ToList();
+            downConnectors = connectors.Where(x => x.transform.localPosition.y == extent).ToList();
+        }
+        else if (upDir == Vector3.forward)
+        {
+            forwardConnectors = connectors.Where(x => x.transform.localPosition.y == extent).ToList();
+            backConnectors = connectors.Where(x => x.transform.localPosition.y == -extent).ToList();
+        }
+        else if (upDir == Vector3.back)
+        {
+            forwardConnectors = connectors.Where(x => x.transform.localPosition.y == -extent).ToList();
+            backConnectors = connectors.Where(x => x.transform.localPosition.y == extent).ToList();
+        }
+        else if (upDir == Vector3.right)
+        {
+            rightConnectors = connectors.Where(x => x.transform.localPosition.y == extent).ToList();
+            leftConnectors = connectors.Where(x => x.transform.localPosition.y == -extent).ToList();
+        }
+        else if (upDir == Vector3.left)
+        {
+            rightConnectors = connectors.Where(x => x.transform.localPosition.y == -extent).ToList();
+            leftConnectors = connectors.Where(x => x.transform.localPosition.y == extent).ToList();
+        }
+
+        if (rightDir == Vector3.right)
+        {
+            rightConnectors = connectors.Where(x => x.transform.localPosition.x == extent).ToList();
+            leftConnectors = connectors.Where(x => x.transform.localPosition.x == -extent).ToList();
+        }
+        else if (rightDir == Vector3.left)
+        {
+            rightConnectors = connectors.Where(x => x.transform.localPosition.x == -extent).ToList();
             leftConnectors = connectors.Where(x => x.transform.localPosition.x == extent).ToList();
         }
-        if (transform.rotation.eulerAngles.y == 270)
+        else if (rightDir == Vector3.forward)
         {
             forwardConnectors = connectors.Where(x => x.transform.localPosition.x == extent).ToList();
-            rightConnectors = connectors.Where(x => x.transform.localPosition.z == -extent).ToList();
             backConnectors = connectors.Where(x => x.transform.localPosition.x == -extent).ToList();
-            leftConnectors = connectors.Where(x => x.transform.localPosition.z == extent).ToList();
+        }
+        else if (rightDir == Vector3.back)
+        {
+            forwardConnectors = connectors.Where(x => x.transform.localPosition.x == -extent).ToList();
+            backConnectors = connectors.Where(x => x.transform.localPosition.x == extent).ToList();
+        }
+        else if (rightDir == Vector3.up)
+        {
+            upConnectors = connectors.Where(x => x.transform.localPosition.x == extent).ToList();
+            downConnectors = connectors.Where(x => x.transform.localPosition.x == -extent).ToList();
+        }
+        else if (rightDir == Vector3.down)
+        {
+            upConnectors = connectors.Where(x => x.transform.localPosition.x == -extent).ToList();
+            downConnectors = connectors.Where(x => x.transform.localPosition.x == extent).ToList();
         }
 
         forward = CheckSide(forwardConnectors);
         right = CheckSide(rightConnectors);
         back = CheckSide(backConnectors);
         left = CheckSide(leftConnectors);
+        up = CheckSide(upConnectors);
+        down = CheckSide(downConnectors);
 
         sides.SetSideStyle(Side3D.Forward, forward, forwardConnectors.Count());
         sides.SetSideStyle(Side3D.Right, right, rightConnectors.Count());
         sides.SetSideStyle(Side3D.Back, back, backConnectors.Count());
         sides.SetSideStyle(Side3D.Left, left, leftConnectors.Count());
+        sides.SetSideStyle(Side3D.Up, up, upConnectors.Count());
+        sides.SetSideStyle(Side3D.Down, down, downConnectors.Count());
+
+    }
+
+    public void UpdateSides()
+    {
+        SetConnectorSides(transform.forward, transform.up, transform.right);
     }
 
     SideStyle3D CheckSide(List<Connector> connectors)
@@ -274,6 +361,13 @@ public class Tile3D : MonoBehaviour
         {
             if (connectors[0].connectorSize == ConnectorSize.Wide)
             {
+                if (transform.up == Vector3.right && transform.forward == Vector3.forward || transform.up == Vector3.left && transform.forward == Vector3.forward ||
+                    transform.up == Vector3.forward && transform.forward == Vector3.right || transform.up == Vector3.forward && transform.forward == Vector3.left ||
+                    transform.up == Vector3.right && transform.forward == Vector3.back || transform.up == Vector3.left && transform.forward == Vector3.back ||
+                    transform.up == Vector3.back && transform.forward == Vector3.right || transform.up == Vector3.back && transform.forward == Vector3.left)
+                {
+                    return SideStyle3D.Tall;
+                }
                 return SideStyle3D.Wide;
             }
             else
@@ -319,48 +413,61 @@ public class Tile3D : MonoBehaviour
     }
     public void GenerateRotatedTiles()
     {
-        if (rot90)
+        GameObject newTile;
+        Tile3D tile;
+        string prefabPath;
+        if (rotX90)
         {
-            GameObject newTile = Instantiate(gameObject, transform.position, Quaternion.Euler(0, 90, 0));
-            newTile.name = name + "-90";
-            Tile3D tile = newTile.GetComponent<Tile3D>();
-            //tile.RotateScannedColors(RotationType3D.Rot90);
-            //Save to tile folder
-            string prefabPath = "Assets/Resources/Tiles3D/" + newTile.name + ".prefab";
-            UnityEditor.PrefabUtility.SaveAsPrefabAsset(newTile, prefabPath);
-        }
-        if (rot180)
-        {
-            GameObject newTile = Instantiate(gameObject, transform.position, Quaternion.Euler(0, 180, 0));
-            newTile.name = name + "-180";
-            Tile3D tile = newTile.GetComponent<Tile3D>();
-            //tile.RotateScannedColors(RotationType3D.Rot180);
-            //Save to tile folder
-            string prefabPath = "Assets/Resources/Tiles3D/" + newTile.name + ".prefab";
-            UnityEditor.PrefabUtility.SaveAsPrefabAsset(newTile, prefabPath);
+            CreateNewTile(Vector3.right, Vector3.up, "-90");
 
         }
-        if (rot270)
+        if (rotX180)
         {
-            GameObject newTile = Instantiate(gameObject, transform.position, Quaternion.Euler(0, 270, 0));
-            newTile.name = name + "-270";
-            Tile3D tile = newTile.GetComponent<Tile3D>();
-            //tile.RotateScannedColors(RotationType3D.Rot270);
-            //Save to tile folder
-            string prefabPath = "Assets/Resources/Tiles3D/" + newTile.name + ".prefab";
-            UnityEditor.PrefabUtility.SaveAsPrefabAsset(newTile, prefabPath);
+            CreateNewTile(Vector3.back, Vector3.up, "-180");
         }
-        // if (rotZ180)
-        // {
-        //     GameObject newTile = Instantiate(gameObject, transform.position, Quaternion.Euler(0, 0, 180));
-        //     newTile.name = name + "-Z180";
-        //     Tile3D tile = newTile.GetComponent<Tile3D>();
-        //     tile.RotateScannedColors(RotationType3D.RotZ180);
-        //     //Save to tile folder
-        //     string prefabPath = "Assets/Resources/Tiles3D/" + newTile.name + ".prefab";
-        //     UnityEditor.PrefabUtility.SaveAsPrefabAsset(newTile, prefabPath);
+        if (rotX270)
+        {
+            CreateNewTile(Vector3.left, Vector3.up, "-270");
+        }
+        if (rotZ90)
+        {
+            CreateNewTile(Vector3.forward, Vector3.right, "-Z90");
 
-        // }
+            CreateNewTile(Vector3.right, Vector3.back, "-Z90X90");
+
+            CreateNewTile(Vector3.back, Vector3.left, "-Z90X180");
+
+            CreateNewTile(Vector3.left, Vector3.forward, "-Z90X270");
+
+            CreateNewTile(Vector3.forward, Vector3.left, "-Z270");
+
+            CreateNewTile(Vector3.right, Vector3.forward, "-Z270X90");
+
+            CreateNewTile(Vector3.back, Vector3.right, "-Z90X180");
+
+            CreateNewTile(Vector3.left, Vector3.back, "-Z270X270");
+
+        }
+        if (rotZ180)
+        {
+            CreateNewTile(Vector3.forward, Vector3.down, "-Z180");
+
+            if (rotX180)
+            {
+                CreateNewTile(Vector3.back, Vector3.down, "-ZX180");
+            }
+        }
+    }
+
+    void CreateNewTile(Vector3 forwardDir, Vector3 upDir, string suffix)
+    {
+        GameObject newTile = Instantiate(gameObject, transform.position, Quaternion.LookRotation(forwardDir, upDir));
+        newTile.name = name + suffix;
+        Tile3D tile = newTile.GetComponent<Tile3D>();
+
+        string prefabPath = "Assets/Resources/Tiles3D/" + newTile.name + ".prefab";
+        UnityEditor.PrefabUtility.SaveAsPrefabAsset(newTile, prefabPath);
+        DestroyImmediate(newTile);
     }
     // public void RotateScannedColors(RotationType3D rotation)
     // {

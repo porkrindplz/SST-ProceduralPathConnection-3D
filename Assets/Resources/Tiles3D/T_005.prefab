@@ -47,9 +47,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1913025a2c20844ca848e02fc6abc0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rot90: 1
-  rot180: 1
-  rot270: 1
+  rotX90: 1
+  rotX180: 1
+  rotX270: 1
+  rotZ90: 0
   rotZ180: 0
   forward: 2
   right: 0
