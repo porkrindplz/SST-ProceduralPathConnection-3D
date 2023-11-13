@@ -22,6 +22,8 @@ public class Generator3D : MonoBehaviour
     [SerializeField] int drawAttempts = 0;
 
     [Header("Grid Settings")]
+    [Tooltip("The scale of the grid.")]
+    public int scale = 1;
 
     [Tooltip("The number of cells in the x dimension of the grid.")]
     public int xDimension;
@@ -63,6 +65,11 @@ public class Generator3D : MonoBehaviour
     WaitForSeconds tileWait;
     int analyzeCount;
     Cell3D lastCollapsed;
+    BezierKnot startKnot;
+    BezierKnot midKnot;
+    BezierKnot endKnot;
+    BezierKnot knot;
+    Vector3 intersectionPoint;
 
 
     private void Awake()
@@ -88,7 +95,6 @@ public class Generator3D : MonoBehaviour
     IEnumerator GenerationProcess()
     {
         attempts++;
-        Debug.Log("Attempts# " + attempts);
         if (generationCoroutine != null)
         {
             StopCoroutine(generationCoroutine);
@@ -100,7 +106,6 @@ public class Generator3D : MonoBehaviour
             StopCoroutine(generateSplinesCoroutine);
         }
         pathAttempts++;
-        Debug.Log("Path Attempts# " + pathAttempts);
         yield return generateSplinesCoroutine = StartCoroutine(GenerateSplinesNew());
         if (drawCoroutine != null)
         {
@@ -125,61 +130,67 @@ public class Generator3D : MonoBehaviour
             if (waitsActive)
                 yield return new WaitForSeconds(waitTime);
 
-            //using the start and end locations, create a spline that connects them with points in between that line up with the grid's z axis
             GameObject splineObject = new GameObject("Spline " + i);
             splines[i] = splineObject.AddComponent<SplineContainer>();
             splineObject.transform.parent = splineParent.transform;
 
-            BezierKnot startKnot = new BezierKnot();//Create start knot
-            BezierKnot midKnot = new BezierKnot();//Create a knot that indicates the previous knot's direction
-            BezierKnot endKnot = new BezierKnot();//Create end knot
+            startKnot = new BezierKnot();
+            midKnot = new BezierKnot();
+            endKnot = new BezierKnot();
             startKnot.Position = new float3(startLocation.x, startLocation.y, startLocation.z);
 
-            splines[i].Spline.Add(startKnot);//Add start knot to spline
+            splines[i].Spline.Add(startKnot);
             splines[i].Spline.SetTangentMode(0, TangentMode.AutoSmooth, BezierTangent.Out);
 
-            int zDist = endLocation.z - startLocation.z;//Number of points between start and end knots
-            int xLocation = startLocation.x;//xLocation of most recently added knot
-            int yLocation = startLocation.y;//yLocation of most recently added knot
+            int zDist = endLocation.z - startLocation.z;
+            int xLocation = startLocation.x;
+            int yLocation = startLocation.y;
+            int xDist;
+            int yDist;
+            int tempX;
+            int tempY;
+            int closestI;
+            int closestJ;
+            int neighborI;
+            int neighborJ;
+            int whileBreaker = 0;
+            Cell3D currentCell;
+            Cell3D midCell;
 
             for (int j = 1; j < zDist; j++)
             {
                 if (waitsActive)
                     yield return new WaitForSeconds(waitTime);
-                Vector3 intersectionPoint = new Vector3(xLocation, yLocation, startLocation.z + j);//Point on grid that intersects with spline
-                BezierKnot knot = new BezierKnot();//
+                intersectionPoint = new Vector3(xLocation, yLocation, startLocation.z + j);
+                knot = new BezierKnot();
 
-                int xDist = 0;
-                int yDist = 0;
-                int tempX = xLocation;
-                int tempY = yLocation;
-                //implement the djikstra method when zLocation is half way between start location and end location so that the path is more direct
-                if (j > (zDist) / 2)
+                xDist = 0;
+                yDist = 0;
+                tempX = xLocation;
+                tempY = yLocation;
+
+                if (j > zDist / 2)
                 {
-                    Debug.Log("Half way there: " + j);
-
                     float[,] distances = new float[xDimension, yDimension];
                     for (int k = 0; k < xDimension; k++)
                     {
                         for (int l = 0; l < yDimension; l++)
                         {
-                            // Copilot explain: this is the initialization of the distances array.
                             distances[k, l] = Vector2.Distance(new Vector2(k, l), new Vector2(endLocation.x, endLocation.y));
                         }
                     }
                     float minDistanceToEnd = float.MaxValue;
-                    int closestI = xLocation;
-                    int closestJ = yLocation;
+                    closestI = xLocation;
+                    closestJ = yLocation;
 
-                    //copilot explain: this is the part where we update the distances of the neighbors of the current cell
                     for (int x = -1; x <= 1; x++)
                     {
                         for (int y = -1; y <= 1; y++)
                         {
                             if (x == 0 && y != 0 || y == 0 && x != 0)
                             {
-                                int neighborI = xLocation + x;
-                                int neighborJ = yLocation + y;
+                                neighborI = xLocation + x;
+                                neighborJ = yLocation + y;
 
                                 if (neighborI >= 0 && neighborI < xDimension && neighborJ >= 0 && neighborJ < yDimension && distances[xLocation, yLocation] > distances[neighborI, neighborJ])
                                 {
@@ -204,16 +215,17 @@ public class Generator3D : MonoBehaviour
                     xDist = tempX - xLocation;
                     yDist = tempY - yLocation;
                     knot.Position = new Vector3(tempX, tempY, intersectionPoint.z);
-                    Cell3D currentCell = cellGrid[FindGridIndex((int)knot.Position.x, (int)knot.Position.y, (int)knot.Position.z)];
+                    currentCell = cellGrid[FindGridIndex((int)knot.Position.x, (int)knot.Position.y, (int)knot.Position.z)];
                     if (xDist == 0 && yDist == 0)
                     {
                         currentCell.IncreasePoints(Cell3D.Direction.Back);
                     }
                     else
                     {
-                        Cell3D midCell;
-                        midKnot = new BezierKnot();
-                        midKnot.Position = new Vector3(xLocation + (int)(xDist / 2), yLocation + (int)(yDist / 2), intersectionPoint.z);
+                        midKnot = new BezierKnot
+                        {
+                            Position = new Vector3(xLocation + (int)(xDist / 2), yLocation + (int)(yDist / 2), intersectionPoint.z)
+                        };
                         midCell = cellGrid[FindGridIndex((int)midKnot.Position.x, (int)midKnot.Position.y, (int)midKnot.Position.z)];
                         midCell.IncreasePoints(Cell3D.Direction.Back);
                         if (xDist > 0)
@@ -252,7 +264,7 @@ public class Generator3D : MonoBehaviour
                 {
                     // randomly select from the values that are equal
                     int rndXY = UnityEngine.Random.Range(0, 2);//Randomly choose whether to move in the x or y direction
-                    int whileBreaker = 0;
+                    whileBreaker = 0;
 
                     if (rndXY == 0)
                     {
@@ -281,13 +293,12 @@ public class Generator3D : MonoBehaviour
                     //if the x location is the same as the previous x location, increase the cell's back points
                     float pointDiffX = xLocation - knot.Position.x;
                     float pointDiffY = yLocation - knot.Position.y;
-                    Cell3D currentCell = cellGrid[FindGridIndex((int)knot.Position.x, (int)knot.Position.y, (int)knot.Position.z)];
+                    currentCell = cellGrid[FindGridIndex((int)knot.Position.x, (int)knot.Position.y, (int)knot.Position.z)];
 
                     if (pointDiffX == 0 && pointDiffY == 0)
                         cellGrid[FindGridIndex((int)knot.Position.x, (int)knot.Position.y, (int)knot.Position.z)].IncreasePoints(Cell3D.Direction.Back); //add back path
                     else if (pointDiffX != 0)
                     {
-                        Cell3D midCell;
                         midKnot = new BezierKnot();
                         Debug.LogWarning("DiffX");
                         midKnot.Position = new Vector3(xLocation + (int)(pointDiffX / 2), yLocation, intersectionPoint.z);
@@ -308,7 +319,6 @@ public class Generator3D : MonoBehaviour
                     }
                     else if (pointDiffY != 0)
                     {
-                        Cell3D midCell;
                         midKnot = new BezierKnot();
                         Debug.LogWarning("DiffY");
                         midKnot.Position = new Vector3(xLocation, yLocation + (int)(pointDiffY / 2), intersectionPoint.z);
@@ -341,14 +351,18 @@ public class Generator3D : MonoBehaviour
             }
             if (waitsActive)
                 yield return new WaitForSeconds(waitTime);
-            midKnot = new BezierKnot();
-            midKnot.Position = new Vector3(xLocation, yLocation, endLocation.z);
+            midKnot = new BezierKnot
+            {
+                Position = new Vector3(xLocation, yLocation, endLocation.z)
+            };
             splines[i].Spline.Add(midKnot);
 
             if (waitsActive)
                 yield return new WaitForSeconds(waitTime);
-            endKnot = new BezierKnot();
-            endKnot.Position = new Vector3(endLocation.x, endLocation.y, endLocation.z);
+            endKnot = new BezierKnot
+            {
+                Position = new Vector3(endLocation.x, endLocation.y, endLocation.z)
+            };
             splines[i].Spline.Add(endKnot);
         }
         for (int i = 0; i < cellGrid.Count(); i++)
@@ -388,6 +402,7 @@ public class Generator3D : MonoBehaviour
         }
 
         int cellCounter = 0;
+        Cell3D newCell;
         //Create grid of cells
         for (int z = 0; z < zDimension; z++)
         {
@@ -396,7 +411,7 @@ public class Generator3D : MonoBehaviour
                 for (int x = 0; x < xDimension; x++)
                 {
                     //Create a cell
-                    Cell3D newCell = Instantiate(cellPrefab, new Vector3(x, y, z), Quaternion.identity);
+                    newCell = Instantiate(cellPrefab, new Vector3(x, y, z), Quaternion.identity);
                     newCell.gameObject.name = "Cell3D " + cellCounter;
                     newCell.CreateCell(false, tileObjects);
                     newCell.ResetPoints();
@@ -410,16 +425,25 @@ public class Generator3D : MonoBehaviour
 
     IEnumerator Draw()
     {
+        List<Cell3D> tempGrid;
+        Cell3D[] nextGrid;
+        Cell3D selectedCell;
+        Cell3D forward, right, back, left, up, down;
+        List<Tile3D> options;
+        Tile3D chosenTile;
+        int optionLength;
+        int stopIndex;
+        int randCell;
+        int index;
+        string historicalDataPath = "Assets/Resources/Cell3D Data.txt";
+        string cellData;
+
         while (true)
         {
             if (waitsActive)
                 yield return tileWait;
 
-            //Pick Cell3D with least entropy
-
-            //Sort by entropy
-            List<Cell3D> tempGrid = new List<Cell3D>(cellGrid);
-
+            tempGrid = new List<Cell3D>(cellGrid);
             tempGrid.RemoveAll(c => c.collapsed);
             tempGrid.RemoveAll(c => c.SideCount() < 1);
 
@@ -440,8 +464,8 @@ public class Generator3D : MonoBehaviour
             {
 
                 //Remove all cells with more options than the first cell (the one with least entropy)
-                int optionLength = tempGrid[0].filteredOptions.Length;
-                int stopIndex = 0;
+                optionLength = tempGrid[0].filteredOptions.Length;
+                stopIndex = 0;
                 for (int i = 0; i < tempGrid.Count(); i++)
                 {
                     if (tempGrid[i].filteredOptions.Length > optionLength)
@@ -453,22 +477,18 @@ public class Generator3D : MonoBehaviour
                 if (stopIndex > 0) tempGrid.RemoveRange(stopIndex, tempGrid.Count - stopIndex);
 
                 //Pick a random cell from the list
-                int randCell = UnityEngine.Random.Range(0, tempGrid.Count);
-                Cell3D selectedCell = tempGrid[randCell];
+                randCell = UnityEngine.Random.Range(0, tempGrid.Count);
+                selectedCell = tempGrid[randCell];
                 selectedCell.collapsed = true;
                 //Pick a random tile from the cell's filtered options
-                Tile3D chosenTile = null;
+                chosenTile = null;
                 if (selectedCell.filteredOptions != null && selectedCell.filteredOptions.Length > 0)
                 {
                     chosenTile = selectedCell.filteredOptions[UnityEngine.Random.Range(0, selectedCell.filteredOptions.Length)];
                 }
                 if (chosenTile == null)
                 {
-                    Debug.Log("No tile selected");
-                    //Save data on the current cell to a txt file
-                    string path = "Assets/Resources/Cell3D Data.txt";
-                    //Write some text to the test.txt file
-                    string cellData = "Attempts: " + attempts + "\n" + "Cell: " + selectedCell.name + "\n" +
+                    cellData = "Attempts: " + attempts + "\n" + "Cell: " + selectedCell.name + "\n" +
                                         "Grid size: " + xDimension + "x" + yDimension + "y" + zDimension + "z" + "\n" +
                                         "Paths: " + splines.Length + "\n" +
                                         "Coordinates: " + selectedCell.transform.position + "\n" +
@@ -478,7 +498,7 @@ public class Generator3D : MonoBehaviour
                                         " Left: " + selectedCell.leftPoints + " Right: " + selectedCell.rightPoints +
                                         " Up: " + selectedCell.upPoints + " Down: " + selectedCell.downPoints + "\n" +
                                         "--------------------------------------------------" + "\n";
-                    System.IO.File.AppendAllText(path, cellData);
+                    System.IO.File.AppendAllText(historicalDataPath, cellData);
                     if (debugMode)
                         while (!Input.GetKeyDown(KeyCode.P))
                         {
@@ -489,31 +509,26 @@ public class Generator3D : MonoBehaviour
                 tempGrid[randCell].tileOptions = new Tile3D[] { chosenTile };
                 CollapseTargetCell(cellGrid, chosenTile, FindGridIndex((int)tempGrid[randCell].transform.position.x, (int)tempGrid[randCell].transform.position.y, (int)tempGrid[randCell].transform.position.z));
             }
-            Cell3D[] nextGrid = new Cell3D[cellGrid.Count()];
+            nextGrid = new Cell3D[cellGrid.Count()];
             for (int z = 0; z < zDimension; z++)
             {
                 for (int y = 0; y < yDimension; y++)
                 {
                     for (int x = 0; x < xDimension; x++)
                     {
-                        int index = FindGridIndex(x, y, z);
-                        Debug.Log("Index: " + index + " beginning of loop. Grid value" + x + y + z);
+                        index = FindGridIndex(x, y, z);
+
                         if (cellGrid[index].collapsed || cellGrid[index].SideCount() < 1 || Mathf.Abs(new Vector3(x, y, z).magnitude) - Mathf.Abs(new Vector3(lastCollapsed.transform.position.x, lastCollapsed.transform.position.y, lastCollapsed.transform.position.z).magnitude) > 1)
                         {
-                            Debug.Log("Cell3D " + index + " is collapsed");
                             nextGrid[index] = cellGrid[index];
                         }
                         else
                         {
-                            List<Tile3D> options = tileObjects.ToList();
+                            options = tileObjects.ToList();
 
-                            Debug.Log("Options Added: " + options.Count());
-                            //look forward
                             if (z < zDimension)
                             {
-                                Cell3D forward = cellGrid[FindGridIndex(x, y, z + 1)];
-                                Debug.Log("Cell3D forward: " + forward.name);
-
+                                forward = cellGrid[FindGridIndex(x, y, z + 1)];
                                 var validOptions = new List<Tile3D>();
 
                                 if (forward.transform.position.z < zDimension)
@@ -521,24 +536,20 @@ public class Generator3D : MonoBehaviour
                                     {
                                         if (forward.GetOpenSides(Cell3D.Direction.Back) == cellGrid[index].GetOpenSides(Cell3D.Direction.Forward))
                                         {
-                                            var valid = option.validNeighbours.back; //two is the index of the back direction of the adjacent tile
+                                            var valid = option.validNeighbours.back;
                                             validOptions.AddRange(valid);
                                         }
                                     }
                                 else
                                 {
-                                    // the valid options must have blank forward side
                                     validOptions.AddRange(cellGrid[index].filteredOptions.Where(t => t.validNeighbours.forward.Contains(tileObjects[0])));
                                 }
                                 options = CheckValid(options, validOptions);
-                                Debug.Log("Look forward options: " + options.Count());
                             }
 
-                            //look right
                             if (x < xDimension)
                             {
-                                Cell3D right = cellGrid[FindGridIndex(x + 1, y, z)];
-                                Debug.Log("Cell3D right: " + right.name);
+                                right = cellGrid[FindGridIndex(x + 1, y, z)];
                                 var validOptions = new List<Tile3D>();
 
                                 if (right.transform.position.x < xDimension)
@@ -546,24 +557,21 @@ public class Generator3D : MonoBehaviour
                                     {
                                         if (right.GetOpenSides(Cell3D.Direction.Left) == cellGrid[index].GetOpenSides(Cell3D.Direction.Right))
                                         {
-                                            var valid = option.validNeighbours.left; //one is the index of the left direction of the adjacent tile
+                                            var valid = option.validNeighbours.left;
                                             validOptions.AddRange(valid);
                                         }
                                     }
                                 else
                                 {
-                                    // the valid options must have blank right side
                                     validOptions.AddRange(cellGrid[index].filteredOptions.Where(t => t.validNeighbours.right.Contains(tileObjects[0])));
                                 }
                                 options = CheckValid(options, validOptions);
                                 Debug.Log("Look right options: " + options.Count());
                             }
 
-                            //look back
                             if (z > -1)
                             {
-                                Cell3D back = cellGrid[FindGridIndex(x, y, z - 1)];
-                                Debug.Log("Cell3D back: " + back.name);
+                                back = cellGrid[FindGridIndex(x, y, z - 1)];
                                 var validOptions = new List<Tile3D>();
 
                                 if (back.transform.position.z >= 0)
@@ -571,24 +579,21 @@ public class Generator3D : MonoBehaviour
                                     {
                                         if (back.GetOpenSides(Cell3D.Direction.Forward) == cellGrid[index].GetOpenSides(Cell3D.Direction.Back))
                                         {
-                                            var valid = option.validNeighbours.forward; //one is the index of the forward direction of the adjacent tile
+                                            var valid = option.validNeighbours.forward;
                                             validOptions.AddRange(valid);
                                         }
                                     }
                                 else
                                 {
-                                    // the valid options must have blank back side
                                     validOptions.AddRange(cellGrid[index].filteredOptions.Where(t => t.validNeighbours.back.Contains(tileObjects[0])));
                                 }
                                 options = CheckValid(options, validOptions);
                                 Debug.Log("Look back options: " + options.Count());
                             }
 
-                            //look left
                             if (x > -1)
                             {
-                                Cell3D left = cellGrid[FindGridIndex(x - 1, y, z)];
-                                Debug.Log("Cell3D left: " + left.name);
+                                left = cellGrid[FindGridIndex(x - 1, y, z)];
                                 var validOptions = new List<Tile3D>();
 
                                 if (left.transform.position.x >= 0)
@@ -596,24 +601,20 @@ public class Generator3D : MonoBehaviour
                                     {
                                         if (left.GetOpenSides(Cell3D.Direction.Right) == cellGrid[index].GetOpenSides(Cell3D.Direction.Left))
                                         {
-                                            var valid = option.validNeighbours.right; //one is the index of the right direction of the adjacent tile
+                                            var valid = option.validNeighbours.right;
                                             validOptions.AddRange(valid);
                                         }
                                     }
                                 else
                                 {
-                                    // the valid options must have blank left side
                                     validOptions.AddRange(cellGrid[index].filteredOptions.Where(t => t.validNeighbours.left.Contains(tileObjects[0])));
                                 }
                                 options = CheckValid(options, validOptions);
-                                Debug.Log("Look left options: " + options.Count());
                             }
 
-                            //look up
                             if (y < yDimension)
                             {
-                                Cell3D up = cellGrid[FindGridIndex(x, y + 1, z)];
-                                Debug.Log("Cell3D up: " + up.name);
+                                up = cellGrid[FindGridIndex(x, y + 1, z)];
                                 var validOptions = new List<Tile3D>();
 
                                 if (up.transform.position.y < yDimension)
@@ -621,24 +622,21 @@ public class Generator3D : MonoBehaviour
                                     {
                                         if (up.GetOpenSides(Cell3D.Direction.Down) == cellGrid[index].GetOpenSides(Cell3D.Direction.Up))
                                         {
-                                            var valid = option.validNeighbours.down; //one is the index of the down direction of the adjacent tile
+                                            var valid = option.validNeighbours.down;
                                             validOptions.AddRange(valid);
                                         }
                                     }
                                 else
                                 {
-                                    // the valid options must have blank up side
                                     validOptions.AddRange(cellGrid[index].filteredOptions.Where(t => t.validNeighbours.up.Contains(tileObjects[0])));
                                 }
                                 options = CheckValid(options, validOptions);
                                 Debug.Log("Look up options: " + options.Count());
                             }
 
-                            //look down
                             if (y > -1)
                             {
-                                Cell3D down = cellGrid[FindGridIndex(x, y - 1, z)];
-                                Debug.Log("Cell3D down: " + down.name);
+                                down = cellGrid[FindGridIndex(x, y - 1, z)];
                                 var validOptions = new List<Tile3D>();
 
                                 if (down.transform.position.y >= 0)
@@ -646,23 +644,20 @@ public class Generator3D : MonoBehaviour
                                     {
                                         if (down.GetOpenSides(Cell3D.Direction.Up) == cellGrid[index].GetOpenSides(Cell3D.Direction.Down))
                                         {
-                                            var valid = option.validNeighbours.up; //one is the index of the up direction of the adjacent tile
+                                            var valid = option.validNeighbours.up;
                                             validOptions.AddRange(valid);
                                         }
                                     }
                                 else
                                 {
-                                    // the valid options must have blank down side
                                     validOptions.AddRange(cellGrid[index].filteredOptions.Where(t => t.validNeighbours.down.Contains(tileObjects[0])));
                                 }
                                 options = CheckValid(options, validOptions);
-                                Debug.Log("Look down options: " + options.Count());
                             }
 
                             nextGrid[index] = cellGrid[index];
                             nextGrid[index].filteredOptions = new Tile3D[options.Count()];
                             nextGrid[index].filteredOptions = options.ToArray();
-                            //nextGrid[index].collapsed = false;
                         }
                     }
                 }
