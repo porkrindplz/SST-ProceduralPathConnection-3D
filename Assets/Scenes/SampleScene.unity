@@ -152,17 +152,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a15d401115087744a486197c00f021f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waitTime: 0
-  tileWaitTime: 0.001
+  waitTime: 0.5
+  tileWaitTime: 0.5
   waitsActive: 0
   debugMode: 0
   allowance: -1
   attempts: 0
   pathAttempts: 0
   drawAttempts: 0
-  xDimension: 10
+  scale: 1250
+  xDimension: 8
   yDimension: 4
-  zDimension: 10
+  zDimension: 9
   minSplines: 4
   maxSplines: 4
   tileObjects:
@@ -390,7 +391,7 @@ MonoBehaviour:
     type: 3}
   startLocation: {x: 3, y: 2, z: 0}
   endTile: {fileID: 8455304685620669826, guid: 23f57ca5344522145ae468f9a9bcdc0b, type: 3}
-  endLocation: {x: 4, y: 2, z: 9}
+  endLocation: {x: 4, y: 2, z: 8}
   cellGrid: []
   cellPrefab: {fileID: 1724639554753588860, guid: 220ab6c88e20d32448424204f927a746,
     type: 3}

@@ -27,7 +27,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
+  m_LocalScale: {x: 250, y: 250, z: 250}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2533270672470565470}
@@ -55,9 +55,9 @@ MonoBehaviour:
   rotZ90: 1
   rotZ180: 0
   forward: 1
-  right: 2
-  back: 2
-  left: 2
+  right: 3
+  back: 3
+  left: 3
   up: 0
   down: 0
 --- !u!1001 &2642844681514812853
