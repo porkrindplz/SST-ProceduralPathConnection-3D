@@ -152,11 +152,6 @@ PrefabInstance:
       propertyPath: wideSize.y
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1625069422928007782, guid: 088f4e19517de614f8ec311651e96c21,
-        type: 3}
-      propertyPath: connectorSize
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2402233057853093745, guid: 088f4e19517de614f8ec311651e96c21,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -314,11 +309,6 @@ PrefabInstance:
         type: 3}
       propertyPath: wideSize.y
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1625069422928007782, guid: 088f4e19517de614f8ec311651e96c21,
-        type: 3}
-      propertyPath: connectorSize
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2402233057853093745, guid: 088f4e19517de614f8ec311651e96c21,
         type: 3}

@@ -51,7 +51,7 @@ MonoBehaviour:
   rotX90: 0
   rotX180: 1
   rotX270: 0
-  rotZ90: 0
+  rotZ90: 1
   rotZ180: 0
   forward: 1
   right: 0

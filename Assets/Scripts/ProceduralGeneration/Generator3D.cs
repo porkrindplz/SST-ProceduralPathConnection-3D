@@ -14,6 +14,8 @@ public class Generator3D : MonoBehaviour
     [Header("Debug Controls")]
     [SerializeField] float waitTime = 0.5f;
     [SerializeField] float tileWaitTime = 0.4f;
+    [SerializeField] bool waitsActive = true;
+    [SerializeField] bool debugMode = false;
     [SerializeField] int allowance;
     [SerializeField] int attempts = 0;
     [SerializeField] int pathAttempts = 0;
@@ -120,7 +122,8 @@ public class Generator3D : MonoBehaviour
         splineParent = new GameObject("Spline Parent");
         for (int i = 0; i < splines.Length; i++)//Create splines that attach to Start and End tiles
         {
-            yield return new WaitForSeconds(waitTime);
+            if (waitsActive)
+                yield return new WaitForSeconds(waitTime);
 
             //using the start and end locations, create a spline that connects them with points in between that line up with the grid's z axis
             GameObject splineObject = new GameObject("Spline " + i);
@@ -141,7 +144,8 @@ public class Generator3D : MonoBehaviour
 
             for (int j = 1; j < zDist; j++)
             {
-                yield return new WaitForSeconds(waitTime);
+                if (waitsActive)
+                    yield return new WaitForSeconds(waitTime);
                 Vector3 intersectionPoint = new Vector3(xLocation, yLocation, startLocation.z + j);//Point on grid that intersects with spline
                 BezierKnot knot = new BezierKnot();//
 
@@ -245,69 +249,6 @@ public class Generator3D : MonoBehaviour
                 }
 
                 else
-                // {
-
-                //     if (xLocation - endLocation.x >= zDist + allowance)
-                //     {
-                //         xDist = xLocation - endLocation.x - zDist;
-                //     }
-                //     else if (Mathf.Abs(endLocation.x - xLocation) >= zDist + allowance)
-                //     {
-                //         xDist = endLocation.x - xLocation - zDist;
-                //     }
-                //     else if (yLocation - endLocation.y >= zDist + allowance)
-                //     {
-                //         yDist = yLocation - endLocation.y - zDist;
-                //     }
-                //     else if (Mathf.Abs(endLocation.y - yLocation) >= zDist + allowance)
-                //     {
-                //         yDist = endLocation.y - yLocation - zDist;
-                //     }
-
-                //     if (xDist >= -1 && xDist <= 1 && yDist >= -1 && yDist <= 1)
-                //     {
-                //         // randomly select a direction to move in
-                //         int rndXY = UnityEngine.Random.Range(0, 2);//Randomly choose whether to move in the x or y direction
-                //         int whileBreaker = 0;
-
-                //         if (rndXY == 0)
-                //         {
-                //             tempX = xLocation + UnityEngine.Random.Range(-1, 2);
-                //             while (tempX >= xDimension - 1 || tempX < 0 || Mathf.Abs(endLocation.x - tempX) >= Mathf.Abs(endLocation.z - intersectionPoint.z))
-                //             {
-                //                 whileBreaker++;
-                //                 if (whileBreaker > 100) break;
-                //                 tempX = xLocation + UnityEngine.Random.Range(-1, 2);
-                //             }
-                //         }
-                //         else
-                //         {
-                //             tempY = yLocation + UnityEngine.Random.Range(-1, 2);
-                //             while (tempY >= yDimension - 1 || tempY < 0 || Mathf.Abs(endLocation.y - tempY) >= Mathf.Abs(endLocation.z - intersectionPoint.z))
-                //             {
-                //                 whileBreaker++;
-                //                 if (whileBreaker > 100) break;
-                //                 tempY = yLocation + UnityEngine.Random.Range(-1, 2);
-                //             }
-                //         }
-                //     }
-                //     else if (Mathf.Abs(xDist) > Mathf.Abs(yDist))
-                //     {
-                //         // move in x direction
-                //         if (xDist > 0)
-                //             tempX = xLocation - 1;
-                //         else
-                //             tempX = xLocation + 1;
-                //     }
-                //     else if (Mathf.Abs(yDist) > Mathf.Abs(xDist))
-                //     {
-                //         // move in y direction
-                //         if (yDist > 0)
-                //             tempY = yLocation - 1;
-                //         else
-                //             tempY = yLocation + 1;
-                //     }
-                //     else
                 {
                     // randomly select from the values that are equal
                     int rndXY = UnityEngine.Random.Range(0, 2);//Randomly choose whether to move in the x or y direction
@@ -398,12 +339,14 @@ public class Generator3D : MonoBehaviour
                 yLocation = (int)knot.Position.y;
                 // Debug.Log("For Cell3D position: " + knot.Position + "Forward " + cellGrid[FindGridIndex((int)knot.Position.x, (int)knot.Position.z)].forwardPoints + " Back " + cellGrid[FindGridIndex((int)knot.Position.x, (int)knot.Position.z)].backPoints + " Left " + cellGrid[FindGridIndex((int)knot.Position.x, (int)knot.Position.z)].leftPoints + " Right " + cellGrid[FindGridIndex((int)knot.Position.x, (int)knot.Position.z)].rightPoints);
             }
-            yield return new WaitForSeconds(waitTime);
+            if (waitsActive)
+                yield return new WaitForSeconds(waitTime);
             midKnot = new BezierKnot();
             midKnot.Position = new Vector3(xLocation, yLocation, endLocation.z);
             splines[i].Spline.Add(midKnot);
 
-            yield return new WaitForSeconds(waitTime);
+            if (waitsActive)
+                yield return new WaitForSeconds(waitTime);
             endKnot = new BezierKnot();
             endKnot.Position = new Vector3(endLocation.x, endLocation.y, endLocation.z);
             splines[i].Spline.Add(endKnot);
@@ -412,7 +355,7 @@ public class Generator3D : MonoBehaviour
         {
             cellGrid[i].AnalyzeOpeningOptions();
         }
-        yield return wait;
+        yield return null;
     }
 
 
@@ -463,18 +406,14 @@ public class Generator3D : MonoBehaviour
             }
         }
         yield return null;
-
-        //Set start and end tiles
-        //CollapseTargetCell(cellGrid, startTile, FindGridIndex(startLocation.x, startLocation.y));
-        //CollapseTargetCell(cellGrid, endTile, FindGridIndex(endLocation.x, endLocation.y));
-        //StartCoroutine(GenerateSplines());//Generate splines between start and end tiles
     }
 
     IEnumerator Draw()
     {
         while (true)
         {
-            yield return tileWait;
+            if (waitsActive)
+                yield return tileWait;
 
             //Pick Cell3D with least entropy
 
@@ -515,16 +454,36 @@ public class Generator3D : MonoBehaviour
 
                 //Pick a random cell from the list
                 int randCell = UnityEngine.Random.Range(0, tempGrid.Count);
-                tempGrid[randCell].collapsed = true;
+                Cell3D selectedCell = tempGrid[randCell];
+                selectedCell.collapsed = true;
                 //Pick a random tile from the cell's filtered options
                 Tile3D chosenTile = null;
-                if (tempGrid[randCell].filteredOptions != null && tempGrid[randCell].filteredOptions.Length > 0)
+                if (selectedCell.filteredOptions != null && selectedCell.filteredOptions.Length > 0)
                 {
-                    chosenTile = tempGrid[randCell].filteredOptions[UnityEngine.Random.Range(0, tempGrid[randCell].filteredOptions.Length)];
+                    chosenTile = selectedCell.filteredOptions[UnityEngine.Random.Range(0, selectedCell.filteredOptions.Length)];
                 }
                 if (chosenTile == null)
                 {
                     Debug.Log("No tile selected");
+                    //Save data on the current cell to a txt file
+                    string path = "Assets/Resources/Cell3D Data.txt";
+                    //Write some text to the test.txt file
+                    string cellData = "Attempts: " + attempts + "\n" + "Cell: " + selectedCell.name + "\n" +
+                                        "Grid size: " + xDimension + "x" + yDimension + "y" + zDimension + "z" + "\n" +
+                                        "Paths: " + splines.Length + "\n" +
+                                        "Coordinates: " + selectedCell.transform.position + "\n" +
+                                        "Options: " + selectedCell.filteredOptions.Length + "\n" +
+                                        "Points: " + "\n" +
+                                        "Forward: " + selectedCell.forwardPoints + " Back: " + selectedCell.backPoints +
+                                        " Left: " + selectedCell.leftPoints + " Right: " + selectedCell.rightPoints +
+                                        " Up: " + selectedCell.upPoints + " Down: " + selectedCell.downPoints + "\n" +
+                                        "--------------------------------------------------" + "\n";
+                    System.IO.File.AppendAllText(path, cellData);
+                    if (debugMode)
+                        while (!Input.GetKeyDown(KeyCode.P))
+                        {
+                            yield return null;
+                        }
                     yield return StartCoroutine(GenerationProcess());
                 }
                 tempGrid[randCell].tileOptions = new Tile3D[] { chosenTile };
@@ -550,7 +509,7 @@ public class Generator3D : MonoBehaviour
 
                             Debug.Log("Options Added: " + options.Count());
                             //look forward
-                            if (z < zDimension - 1)
+                            if (z < zDimension)
                             {
                                 Cell3D forward = cellGrid[FindGridIndex(x, y, z + 1)];
                                 Debug.Log("Cell3D forward: " + forward.name);
@@ -576,7 +535,7 @@ public class Generator3D : MonoBehaviour
                             }
 
                             //look right
-                            if (x < xDimension - 1)
+                            if (x < xDimension)
                             {
                                 Cell3D right = cellGrid[FindGridIndex(x + 1, y, z)];
                                 Debug.Log("Cell3D right: " + right.name);
@@ -601,7 +560,7 @@ public class Generator3D : MonoBehaviour
                             }
 
                             //look back
-                            if (z > 0)
+                            if (z > -1)
                             {
                                 Cell3D back = cellGrid[FindGridIndex(x, y, z - 1)];
                                 Debug.Log("Cell3D back: " + back.name);
@@ -626,7 +585,7 @@ public class Generator3D : MonoBehaviour
                             }
 
                             //look left
-                            if (x > 0)
+                            if (x > -1)
                             {
                                 Cell3D left = cellGrid[FindGridIndex(x - 1, y, z)];
                                 Debug.Log("Cell3D left: " + left.name);
@@ -651,7 +610,7 @@ public class Generator3D : MonoBehaviour
                             }
 
                             //look up
-                            if (y < yDimension - 1)
+                            if (y < yDimension)
                             {
                                 Cell3D up = cellGrid[FindGridIndex(x, y + 1, z)];
                                 Debug.Log("Cell3D up: " + up.name);
@@ -676,7 +635,7 @@ public class Generator3D : MonoBehaviour
                             }
 
                             //look down
-                            if (y > 0)
+                            if (y > -1)
                             {
                                 Cell3D down = cellGrid[FindGridIndex(x, y - 1, z)];
                                 Debug.Log("Cell3D down: " + down.name);

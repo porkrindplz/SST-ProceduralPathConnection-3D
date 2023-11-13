@@ -2,13 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting.Antlr3.Runtime;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.Rendering.Universal.Internal;
 using System.IO;
-
-
 
 public enum Side3D { Forward = 0, Right = 1, Back = 2, Left = 3, Up = 4, Down = 5 };
 public enum SideStyle3D
@@ -230,6 +225,7 @@ public class Tile3D : MonoBehaviour
     void SetConnectorSides(Vector3 forwardDir, Vector3 upDir, Vector3 rightDir)
     {
         float extent = 2.5f;
+        double epsilon = 0.0001;
         Connector[] connectors = GetComponentsInChildren<Connector>();
 
         List<Connector> forwardConnectors = new();
@@ -241,95 +237,95 @@ public class Tile3D : MonoBehaviour
 
         if (forwardDir == Vector3.forward)
         {
-            forwardConnectors = connectors.Where(x => x.transform.localPosition.z == extent).ToList();
-            backConnectors = connectors.Where(x => x.transform.localPosition.z == -extent).ToList();
+            forwardConnectors = GetValidConnectors(connectors, Vector3.forward, extent);
+            backConnectors = GetValidConnectors(connectors, Vector3.forward, -extent);
         }
         else if (forwardDir == Vector3.right)
         {
-            rightConnectors = connectors.Where(x => x.transform.localPosition.z == extent).ToList();
-            leftConnectors = connectors.Where(x => x.transform.localPosition.z == -extent).ToList();
+            rightConnectors = GetValidConnectors(connectors, Vector3.forward, extent);
+            leftConnectors = GetValidConnectors(connectors, Vector3.forward, -extent);
         }
         else if (forwardDir == Vector3.back)
         {
-            forwardConnectors = connectors.Where(x => x.transform.localPosition.z == -extent).ToList();
-            backConnectors = connectors.Where(x => x.transform.localPosition.z == extent).ToList();
+            forwardConnectors = GetValidConnectors(connectors, Vector3.forward, -extent);
+            backConnectors = GetValidConnectors(connectors, Vector3.forward, extent);
         }
         else if (forwardDir == Vector3.left)
         {
-            rightConnectors = connectors.Where(x => x.transform.localPosition.z == -extent).ToList();
-            leftConnectors = connectors.Where(x => x.transform.localPosition.z == extent).ToList();
+            rightConnectors = GetValidConnectors(connectors, Vector3.forward, -extent);
+            leftConnectors = GetValidConnectors(connectors, Vector3.forward, extent);
         }
         else if (forwardDir == Vector3.up)
         {
-            upConnectors = connectors.Where(x => x.transform.localPosition.z == extent).ToList();
-            downConnectors = connectors.Where(x => x.transform.localPosition.z == -extent).ToList();
+            upConnectors = GetValidConnectors(connectors, Vector3.forward, extent);
+            downConnectors = GetValidConnectors(connectors, Vector3.forward, -extent);
         }
         else if (forwardDir == Vector3.down)
         {
-            upConnectors = connectors.Where(x => x.transform.localPosition.z == -extent).ToList();
-            downConnectors = connectors.Where(x => x.transform.localPosition.z == extent).ToList();
+            upConnectors = GetValidConnectors(connectors, Vector3.forward, -extent);
+            downConnectors = GetValidConnectors(connectors, Vector3.forward, extent);
         }
 
         if (upDir == Vector3.up)
         {
-            upConnectors = connectors.Where(x => x.transform.localPosition.y == extent).ToList();
-            downConnectors = connectors.Where(x => x.transform.localPosition.y == -extent).ToList();
+            upConnectors = GetValidConnectors(connectors, Vector3.up, extent);
+            downConnectors = GetValidConnectors(connectors, Vector3.up, -extent);
         }
         else if (upDir == Vector3.down)
         {
-            upConnectors = connectors.Where(x => x.transform.localPosition.y == -extent).ToList();
-            downConnectors = connectors.Where(x => x.transform.localPosition.y == extent).ToList();
+            upConnectors = GetValidConnectors(connectors, Vector3.up, -extent);
+            downConnectors = GetValidConnectors(connectors, Vector3.up, extent);
         }
         else if (upDir == Vector3.forward)
         {
-            forwardConnectors = connectors.Where(x => x.transform.localPosition.y == extent).ToList();
-            backConnectors = connectors.Where(x => x.transform.localPosition.y == -extent).ToList();
+            forwardConnectors = GetValidConnectors(connectors, Vector3.up, extent);
+            backConnectors = GetValidConnectors(connectors, Vector3.up, -extent);
         }
         else if (upDir == Vector3.back)
         {
-            forwardConnectors = connectors.Where(x => x.transform.localPosition.y == -extent).ToList();
-            backConnectors = connectors.Where(x => x.transform.localPosition.y == extent).ToList();
+            forwardConnectors = GetValidConnectors(connectors, Vector3.up, -extent);
+            backConnectors = GetValidConnectors(connectors, Vector3.up, extent);
         }
         else if (upDir == Vector3.right)
         {
-            rightConnectors = connectors.Where(x => x.transform.localPosition.y == extent).ToList();
-            leftConnectors = connectors.Where(x => x.transform.localPosition.y == -extent).ToList();
+            rightConnectors = GetValidConnectors(connectors, Vector3.up, extent);
+            leftConnectors = GetValidConnectors(connectors, Vector3.up, -extent);
         }
         else if (upDir == Vector3.left)
         {
-            rightConnectors = connectors.Where(x => x.transform.localPosition.y == -extent).ToList();
-            leftConnectors = connectors.Where(x => x.transform.localPosition.y == extent).ToList();
+            rightConnectors = GetValidConnectors(connectors, Vector3.up, -extent);
+            leftConnectors = GetValidConnectors(connectors, Vector3.up, extent);
         }
 
         if (rightDir == Vector3.right)
         {
-            rightConnectors = connectors.Where(x => x.transform.localPosition.x == extent).ToList();
-            leftConnectors = connectors.Where(x => x.transform.localPosition.x == -extent).ToList();
+            rightConnectors = GetValidConnectors(connectors, Vector3.right, extent);
+            leftConnectors = GetValidConnectors(connectors, Vector3.right, -extent);
         }
         else if (rightDir == Vector3.left)
         {
-            rightConnectors = connectors.Where(x => x.transform.localPosition.x == -extent).ToList();
-            leftConnectors = connectors.Where(x => x.transform.localPosition.x == extent).ToList();
+            rightConnectors = GetValidConnectors(connectors, Vector3.right, -extent);
+            leftConnectors = GetValidConnectors(connectors, Vector3.right, extent);
         }
         else if (rightDir == Vector3.forward)
         {
-            forwardConnectors = connectors.Where(x => x.transform.localPosition.x == extent).ToList();
-            backConnectors = connectors.Where(x => x.transform.localPosition.x == -extent).ToList();
+            forwardConnectors = GetValidConnectors(connectors, Vector3.right, extent);
+            backConnectors = GetValidConnectors(connectors, Vector3.right, -extent);
         }
         else if (rightDir == Vector3.back)
         {
-            forwardConnectors = connectors.Where(x => x.transform.localPosition.x == -extent).ToList();
-            backConnectors = connectors.Where(x => x.transform.localPosition.x == extent).ToList();
+            forwardConnectors = GetValidConnectors(connectors, Vector3.right, -extent);
+            backConnectors = GetValidConnectors(connectors, Vector3.right, extent);
         }
         else if (rightDir == Vector3.up)
         {
-            upConnectors = connectors.Where(x => x.transform.localPosition.x == extent).ToList();
-            downConnectors = connectors.Where(x => x.transform.localPosition.x == -extent).ToList();
+            upConnectors = GetValidConnectors(connectors, Vector3.right, extent);
+            downConnectors = GetValidConnectors(connectors, Vector3.right, -extent);
         }
         else if (rightDir == Vector3.down)
         {
-            upConnectors = connectors.Where(x => x.transform.localPosition.x == -extent).ToList();
-            downConnectors = connectors.Where(x => x.transform.localPosition.x == extent).ToList();
+            upConnectors = GetValidConnectors(connectors, Vector3.right, -extent);
+            downConnectors = GetValidConnectors(connectors, Vector3.right, extent);
         }
 
         forward = CheckSide(forwardConnectors);
@@ -346,6 +342,19 @@ public class Tile3D : MonoBehaviour
         sides.SetSideStyle(Side3D.Up, up, upConnectors.Count());
         sides.SetSideStyle(Side3D.Down, down, downConnectors.Count());
 
+    }
+
+    List<Connector> GetValidConnectors(Connector[] connectors, Vector3 direction, float extent)
+    {
+        double epsilon = 0.0001;
+        if (direction == Vector3.forward)
+            return connectors.Where(x => Mathf.Abs(x.transform.localPosition.z - extent) < epsilon).ToList();
+        else if (direction == Vector3.right)
+            return connectors.Where(x => Mathf.Abs(x.transform.localPosition.x - extent) < epsilon).ToList();
+        else if (direction == Vector3.up)
+            return connectors.Where(x => Mathf.Abs(x.transform.localPosition.y - extent) < epsilon).ToList();
+        else
+            return new List<Connector>();
     }
 
     public void UpdateSides()
@@ -432,30 +441,29 @@ public class Tile3D : MonoBehaviour
         if (rotZ90)
         {
             CreateNewTile(Vector3.forward, Vector3.right, "-Z90");
-
-            CreateNewTile(Vector3.right, Vector3.back, "-Z90X90");
-
-            CreateNewTile(Vector3.back, Vector3.left, "-Z90X180");
-
-            CreateNewTile(Vector3.left, Vector3.forward, "-Z90X270");
-
             CreateNewTile(Vector3.forward, Vector3.left, "-Z270");
 
-            CreateNewTile(Vector3.right, Vector3.forward, "-Z270X90");
-
-            CreateNewTile(Vector3.back, Vector3.right, "-Z90X180");
-
-            CreateNewTile(Vector3.left, Vector3.back, "-Z270X270");
-
+            if (rotX90)
+            {
+                CreateNewTile(Vector3.right, Vector3.back, "-Z90X90");
+                CreateNewTile(Vector3.right, Vector3.forward, "-Z270X90");
+            }
+            if (rotX180)
+            {
+                CreateNewTile(Vector3.back, Vector3.left, "-Z90X180");
+                CreateNewTile(Vector3.back, Vector3.right, "-Z90X180");
+            }
+            if (rotX270)
+            {
+                CreateNewTile(Vector3.left, Vector3.forward, "-Z90X270");
+                CreateNewTile(Vector3.left, Vector3.back, "-Z270X270");
+            }
         }
         if (rotZ180)
         {
             CreateNewTile(Vector3.forward, Vector3.down, "-Z180");
-
             if (rotX180)
-            {
                 CreateNewTile(Vector3.back, Vector3.down, "-ZX180");
-            }
         }
     }
 

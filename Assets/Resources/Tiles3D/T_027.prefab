@@ -35,6 +35,7 @@ Transform:
   - {fileID: 5884917313895421090}
   - {fileID: 3901397618287859012}
   - {fileID: 1926906094943459837}
+  - {fileID: 6057292106215957873}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3706354224028655111
@@ -52,7 +53,7 @@ MonoBehaviour:
   rotX90: 0
   rotX180: 1
   rotX270: 0
-  rotZ90: 0
+  rotZ90: 1
   rotZ180: 1
   forward: 1
   right: 2
@@ -390,6 +391,95 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 593d1fd8b557aab428e9ce4beca18676,
     type: 3}
   m_PrefabInstance: {fileID: 8259345441586121120}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &8455966998379041280
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 8952382382610898245}
+    m_Modifications:
+    - target: {fileID: 1625069422928007782, guid: 088f4e19517de614f8ec311651e96c21,
+        type: 3}
+      propertyPath: wideSize.x
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1625069422928007782, guid: 088f4e19517de614f8ec311651e96c21,
+        type: 3}
+      propertyPath: wideSize.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1625069422928007782, guid: 088f4e19517de614f8ec311651e96c21,
+        type: 3}
+      propertyPath: connectorSize
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2402233057853093745, guid: 088f4e19517de614f8ec311651e96c21,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2402233057853093745, guid: 088f4e19517de614f8ec311651e96c21,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2402233057853093745, guid: 088f4e19517de614f8ec311651e96c21,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2402233057853093745, guid: 088f4e19517de614f8ec311651e96c21,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 2402233057853093745, guid: 088f4e19517de614f8ec311651e96c21,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2402233057853093745, guid: 088f4e19517de614f8ec311651e96c21,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 2402233057853093745, guid: 088f4e19517de614f8ec311651e96c21,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2402233057853093745, guid: 088f4e19517de614f8ec311651e96c21,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2402233057853093745, guid: 088f4e19517de614f8ec311651e96c21,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 2402233057853093745, guid: 088f4e19517de614f8ec311651e96c21,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5455506496660236708, guid: 088f4e19517de614f8ec311651e96c21,
+        type: 3}
+      propertyPath: m_Name
+      value: Connector (5)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 088f4e19517de614f8ec311651e96c21, type: 3}
+--- !u!4 &6057292106215957873 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2402233057853093745, guid: 088f4e19517de614f8ec311651e96c21,
+    type: 3}
+  m_PrefabInstance: {fileID: 8455966998379041280}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8930434544375536495
 PrefabInstance:

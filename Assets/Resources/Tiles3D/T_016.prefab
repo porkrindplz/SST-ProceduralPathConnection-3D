@@ -52,12 +52,12 @@ MonoBehaviour:
   rotX90: 0
   rotX180: 0
   rotX270: 0
-  rotZ90: 0
+  rotZ90: 1
   rotZ180: 0
   forward: 1
-  right: 2
+  right: 3
   back: 1
-  left: 2
+  left: 3
   up: 0
   down: 0
 --- !u!1001 &1546577449168687975
