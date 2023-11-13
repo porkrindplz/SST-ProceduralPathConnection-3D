@@ -36745,3 +36745,255 @@ Options: 0
 Points: 
 Forward: 0 Back: 1 Left: 1 Right: 0 Up: 0 Down: 0
 --------------------------------------------------
+Attempts: 1
+Cell: Cell3D 91
+Grid size: 8x4y9z
+Paths: 4
+Coordinates: (3750.00, 3750.00, 2500.00)
+Options: 0
+Points: 
+Forward: 1 Back: 1 Left: 0 Right: 0 Up: 0 Down: 0
+--------------------------------------------------
+Attempts: 2
+Cell: Cell3D 52
+Grid size: 8x4y9z
+Paths: 4
+Coordinates: (5000.00, 2500.00, 1250.00)
+Options: 0
+Points: 
+Forward: 1 Back: 0 Left: 1 Right: 0 Up: 0 Down: 0
+--------------------------------------------------
+Attempts: 3
+Cell: Cell3D 204
+Grid size: 8x4y9z
+Paths: 4
+Coordinates: (5000.00, 1250.00, 7500.00)
+Options: 0
+Points: 
+Forward: 0 Back: 1 Left: 0 Right: 0 Up: 1 Down: 0
+--------------------------------------------------
+Attempts: 1
+Cell: Cell3D 212
+Grid size: 8x4y9z
+Paths: 4
+Coordinates: (5000.00, 2500.00, 7500.00)
+Options: 0
+Points: 
+Forward: 0 Back: 3 Left: 0 Right: 0 Up: 0 Down: 0
+--------------------------------------------------
+Attempts: 2
+Cell: Cell3D 212
+Grid size: 8x4y9z
+Paths: 4
+Coordinates: (5000.00, 2500.00, 7500.00)
+Options: 0
+Points: 
+Forward: 1 Back: 2 Left: 2 Right: 0 Up: 0 Down: 0
+--------------------------------------------------
+Attempts: 3
+Cell: Cell3D 173
+Grid size: 8x4y9z
+Paths: 4
+Coordinates: (6250.00, 1250.00, 6250.00)
+Options: 0
+Points: 
+Forward: 0 Back: 1 Left: 1 Right: 0 Up: 0 Down: 0
+--------------------------------------------------
+Attempts: 4
+Cell: Cell3D 172
+Grid size: 8x4y9z
+Paths: 4
+Coordinates: (5000.00, 1250.00, 6250.00)
+Options: 0
+Points: 
+Forward: 0 Back: 2 Left: 0 Right: 0 Up: 2 Down: 0
+--------------------------------------------------
+Attempts: 5
+Cell: Cell3D 244
+Grid size: 8x4y9z
+Paths: 4
+Coordinates: (5000.00, 2500.00, 8750.00)
+Options: 0
+Points: 
+Forward: 0 Back: 4 Left: 0 Right: 0 Up: 0 Down: 0
+--------------------------------------------------
+Attempts: 6
+Cell: Cell3D 180
+Grid size: 8x4y9z
+Paths: 4
+Coordinates: (5000.00, 2500.00, 6250.00)
+Options: 0
+Points: 
+Forward: 0 Back: 1 Left: 0 Right: 0 Up: 0 Down: 0
+--------------------------------------------------
+Attempts: 7
+Cell: Cell3D 212
+Grid size: 8x4y9z
+Paths: 4
+Coordinates: (5000.00, 2500.00, 7500.00)
+Options: 0
+Points: 
+Forward: 2 Back: 2 Left: 2 Right: 0 Up: 2 Down: 0
+--------------------------------------------------
+Attempts: 8
+Cell: Cell3D 243
+Grid size: 8x4y9z
+Paths: 4
+Coordinates: (3750.00, 2500.00, 8750.00)
+Options: 0
+Points: 
+Forward: 1 Back: 1 Left: 0 Right: 1 Up: 0 Down: 2
+--------------------------------------------------
+Attempts: 9
+Cell: Cell3D 244
+Grid size: 8x4y9z
+Paths: 4
+Coordinates: (5000.00, 2500.00, 8750.00)
+Options: 0
+Points: 
+Forward: 1 Back: 3 Left: 2 Right: 0 Up: 0 Down: 0
+--------------------------------------------------
+Attempts: 10
+Cell: Cell3D 212
+Grid size: 8x4y9z
+Paths: 4
+Coordinates: (5000.00, 2500.00, 7500.00)
+Options: 0
+Points: 
+Forward: 2 Back: 2 Left: 4 Right: 0 Up: 0 Down: 0
+--------------------------------------------------
+Attempts: 11
+Cell: Cell3D 243
+Grid size: 8x4y9z
+Paths: 4
+Coordinates: (3750.00, 2500.00, 8750.00)
+Options: 0
+Points: 
+Forward: 1 Back: 1 Left: 0 Right: 1 Up: 2 Down: 0
+--------------------------------------------------
+Attempts: 12
+Cell: Cell3D 244
+Grid size: 8x4y9z
+Paths: 4
+Coordinates: (5000.00, 2500.00, 8750.00)
+Options: 0
+Points: 
+Forward: 1 Back: 2 Left: 2 Right: 0 Up: 0 Down: 0
+--------------------------------------------------
+Attempts: 1
+Cell: Cell3D 83
+Grid size: 8x4y9z
+Paths: 4
+Coordinates: (3750.00, 2500.00, 2500.00)
+Options: 0
+Points: 
+Forward: 0 Back: 2 Left: 0 Right: 0 Up: 2 Down: 0
+--------------------------------------------------
+Attempts: 2
+Cell: Cell3D 157
+Grid size: 8x4y9z
+Paths: 4
+Coordinates: (6250.00, 3750.00, 5000.00)
+Options: 0
+Points: 
+Forward: 2 Back: 1 Left: 1 Right: 0 Up: 0 Down: 0
+--------------------------------------------------
+Attempts: 3
+Cell: Cell3D 76
+Grid size: 8x4y9z
+Paths: 4
+Coordinates: (5000.00, 1250.00, 2500.00)
+Options: 0
+Points: 
+Forward: 1 Back: 0 Left: 0 Right: 0 Up: 1 Down: 0
+--------------------------------------------------
+Attempts: 4
+Cell: Cell3D 123
+Grid size: 8x4y9z
+Paths: 4
+Coordinates: (3750.00, 3750.00, 3750.00)
+Options: 0
+Points: 
+Forward: 1 Back: 1 Left: 1 Right: 0 Up: 0 Down: 1
+--------------------------------------------------
+Attempts: 1
+Cell: Cell3D 212
+Grid size: 8x4y9z
+Paths: 4
+Coordinates: (5000.00, 2500.00, 7500.00)
+Options: 0
+Points: 
+Forward: 1 Back: 2 Left: 2 Right: 0 Up: 0 Down: 0
+--------------------------------------------------
+Attempts: 2
+Cell: Cell3D 189
+Grid size: 8x4y9z
+Paths: 4
+Coordinates: (6250.00, 3750.00, 6250.00)
+Options: 0
+Points: 
+Forward: 0 Back: 1 Left: 1 Right: 0 Up: 0 Down: 0
+--------------------------------------------------
+Attempts: 3
+Cell: Cell3D 244
+Grid size: 8x4y9z
+Paths: 4
+Coordinates: (5000.00, 2500.00, 8750.00)
+Options: 0
+Points: 
+Forward: 1 Back: 2 Left: 2 Right: 0 Up: 0 Down: 0
+--------------------------------------------------
+Attempts: 4
+Cell: Cell3D 211
+Grid size: 8x4y9z
+Paths: 4
+Coordinates: (3750.00, 2500.00, 7500.00)
+Options: 0
+Points: 
+Forward: 0 Back: 2 Left: 0 Right: 2 Up: 0 Down: 0
+--------------------------------------------------
+Attempts: 5
+Cell: Cell3D 180
+Grid size: 8x4y9z
+Paths: 4
+Coordinates: (5000.00, 2500.00, 6250.00)
+Options: 0
+Points: 
+Forward: 1 Back: 1 Left: 0 Right: 0 Up: 2 Down: 0
+--------------------------------------------------
+Attempts: 6
+Cell: Cell3D 171
+Grid size: 8x4y9z
+Paths: 4
+Coordinates: (3750.00, 1250.00, 6250.00)
+Options: 0
+Points: 
+Forward: 0 Back: 2 Left: 0 Right: 0 Up: 2 Down: 0
+--------------------------------------------------
+Attempts: 7
+Cell: Cell3D 116
+Grid size: 8x4y9z
+Paths: 4
+Coordinates: (5000.00, 2500.00, 3750.00)
+Options: 0
+Points: 
+Forward: 2 Back: 1 Left: 0 Right: 0 Up: 0 Down: 1
+--------------------------------------------------
+Attempts: 8
+Cell: Cell3D 123
+Grid size: 8x4y9z
+Paths: 4
+Coordinates: (3750.00, 3750.00, 3750.00)
+Options: 0
+Points: 
+Forward: 1 Back: 0 Left: 0 Right: 0 Up: 0 Down: 1
+--------------------------------------------------
+Attempts: 9
+Cell: Cell3D 180
+Grid size: 8x4y9z
+Paths: 4
+Coordinates: (5000.00, 2500.00, 6250.00)
+Options: 0
+Points: 
+Forward: 1 Back: 0 Left: 2 Right: 0 Up: 0 Down: 0
+--------------------------------------------------
